@@ -1,0 +1,128 @@
+-- CREATE TABLE address
+-- (
+--     id      UUID NOT NULL,
+--     address VARCHAR(255),
+--     index   VARCHAR(255),
+--     user_id UUID NOT NULL,
+--     CONSTRAINT pk_address PRIMARY KEY (id)
+-- );
+--
+-- CREATE TABLE authority
+-- (
+--     id   UUID NOT NULL,
+--     name VARCHAR(255),
+--     CONSTRAINT pk_authority PRIMARY KEY (id)
+-- );
+--
+-- CREATE TABLE orders
+-- (
+--     id                    UUID  NOT NULL,
+--     track_number          VARCHAR(255),
+--     product_type          UUID,
+--     price                 FLOAT NOT NULL,
+--     commission            FLOAT NOT NULL,
+--     invoice               VARCHAR(255),
+--     weight                FLOAT NOT NULL,
+--     delivery_price        FLOAT NOT NULL,
+--     kaz_post_track_number VARCHAR(255),
+--     kaz_post_invoice      VARCHAR(255),
+--     receiver_id           UUID  NOT NULL,
+--     user_id               UUID  NOT NULL,
+--     status                VARCHAR(255),
+--     created_by_id         UUID  NOT NULL,
+--     created_date          TIMESTAMP WITHOUT TIME ZONE,
+--     last_modified_by_id   UUID  NOT NULL,
+--     last_modified_date    TIMESTAMP WITHOUT TIME ZONE,
+--     CONSTRAINT pk_orders PRIMARY KEY (id)
+-- );
+--
+-- CREATE TABLE receiver
+-- (
+--     id           UUID NOT NULL,
+--     phone_number VARCHAR(255),
+--     full_name    VARCHAR(255),
+--     iin          VARCHAR(255),
+--     address      VARCHAR(255),
+--     id_number    VARCHAR(255),
+--     CONSTRAINT pk_receiver PRIMARY KEY (id)
+-- );
+--
+-- CREATE TABLE role
+-- (
+--     id   UUID NOT NULL,
+--     name VARCHAR(255),
+--     CONSTRAINT pk_role PRIMARY KEY (id)
+-- );
+--
+-- CREATE TABLE role_authorities
+-- (
+--     authorities_id UUID NOT NULL,
+--     role_id        UUID NOT NULL,
+--     CONSTRAINT pk_role_authorities PRIMARY KEY (authorities_id, role_id)
+-- );
+--
+-- CREATE TABLE user_authorities
+-- (
+--     authorities_id UUID NOT NULL,
+--     user_id        UUID NOT NULL,
+--     CONSTRAINT pk_user_authorities PRIMARY KEY (authorities_id, user_id)
+-- );
+--
+-- CREATE TABLE user_roles
+-- (
+--     role_id UUID NOT NULL,
+--     user_id UUID NOT NULL,
+--     CONSTRAINT pk_user_roles PRIMARY KEY (role_id, user_id)
+-- );
+--
+-- CREATE TABLE users
+-- (
+--     id           UUID         NOT NULL,
+--     username     VARCHAR(255) NOT NULL,
+--     password     VARCHAR(255) NOT NULL,
+--     email        VARCHAR(255),
+--     phone_number VARCHAR(255),
+--     full_name    VARCHAR(255),
+--     iin          VARCHAR(255),
+--     status       VARCHAR(255) NOT NULL,
+--     CONSTRAINT pk_users PRIMARY KEY (id)
+-- );
+--
+-- ALTER TABLE users
+--     ADD CONSTRAINT uc_users_email UNIQUE (email);
+--
+-- ALTER TABLE users
+--     ADD CONSTRAINT uc_users_username UNIQUE (username);
+--
+-- ALTER TABLE address
+--     ADD CONSTRAINT FK_ADDRESS_ON_USER FOREIGN KEY (user_id) REFERENCES users (id);
+--
+-- ALTER TABLE orders
+--     ADD CONSTRAINT FK_ORDERS_ON_CREATEDBY FOREIGN KEY (created_by_id) REFERENCES users (id);
+--
+-- ALTER TABLE orders
+--     ADD CONSTRAINT FK_ORDERS_ON_LASTMODIFIEDBY FOREIGN KEY (last_modified_by_id) REFERENCES users (id);
+--
+-- ALTER TABLE orders
+--     ADD CONSTRAINT FK_ORDERS_ON_RECEIVER FOREIGN KEY (receiver_id) REFERENCES receiver (id);
+--
+-- ALTER TABLE orders
+--     ADD CONSTRAINT FK_ORDERS_ON_USER FOREIGN KEY (user_id) REFERENCES users (id);
+--
+-- ALTER TABLE role_authorities
+--     ADD CONSTRAINT fk_rolaut_on_authority FOREIGN KEY (authorities_id) REFERENCES authority (id);
+--
+-- ALTER TABLE role_authorities
+--     ADD CONSTRAINT fk_rolaut_on_role FOREIGN KEY (role_id) REFERENCES role (id);
+--
+-- ALTER TABLE user_authorities
+--     ADD CONSTRAINT fk_useaut_on_authority FOREIGN KEY (authorities_id) REFERENCES authority (id);
+--
+-- ALTER TABLE user_authorities
+--     ADD CONSTRAINT fk_useaut_on_user FOREIGN KEY (user_id) REFERENCES users (id);
+--
+-- ALTER TABLE user_roles
+--     ADD CONSTRAINT fk_userol_on_role FOREIGN KEY (role_id) REFERENCES role (id);
+--
+-- ALTER TABLE user_roles
+--     ADD CONSTRAINT fk_userol_on_user FOREIGN KEY (user_id) REFERENCES users (id);

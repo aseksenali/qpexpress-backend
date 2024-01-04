@@ -1,0 +1,44 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    container_name: 'postgres'
+    environment:
+      - 'POSTGRES_MULTIPLE_DATABASES=keycloak,mydatabase'
+      - 'POSTGRES_USER=postgres-user'
+      - 'POSTGRES_PASSWORD=secret'
+    volumes:
+      - ./postgres:/docker-entrypoint-initdb.d
+    ports:
+      - '5432:5432'
+    networks:
+      - 'dev-network'
+  keycloak:
+    image: 'bitnami/keycloak:latest'
+    container_name: 'keycloak'
+    environment:
+      KEYCLOAK_DATABASE_HOST: 'postgres'
+      KEYCLOAK_DATABASE_NAME: 'keycloak'
+      KEYCLOAK_DATABASE_USER: 'postgres-user'
+      KEYCLOAK_DATABASE_PASSWORD: 'secret'
+      KEYCLOAK_ADMIN_USER: 'admin'
+      KEYCLOAK_ADMIN_PASSWORD: 'admin'
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./keycloak/themes/qpexpress:/opt/bitnami/keycloak/themes/qpexpress
+    external_links:
+      - 'postgres'
+    networks:
+      - 'dev-network'
+  mailhog:
+    image: 'mailhog/mailhog:latest'
+    container_name: 'mailhog'
+    ports:
+      - '8025:8025'
+      - '1025:1025'
+    networks:
+      - 'dev-network'
+
+networks:
+  dev-network:
+    driver: bridge

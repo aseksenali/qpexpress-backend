@@ -1,0 +1,5 @@
+keycloak:
+  realm: 'QPExpress'
+  auth-server-url: 'https://qpexpress.kz/auth'
+  admin-username: 'askhat.seksenali@sentel.kz'
+  admin-password: 'passwd'

@@ -1,0 +1,22 @@
+spring:
+  jpa:
+    generate-ddl: true
+    hibernate:
+      ddl-auto: validate
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://qpexpress.kz:5432/qpexpress
+    username: qpexpress-admin
+    password: F235vk26
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: "${keycloak.auth-server-url}/realms/${keycloak.realm}"
+          jwk-set-uri: "${spring.security.oauth2.resource-server.jwt.issuer-uri}/protocol/openid-connect/certs"
+  docker:
+    compose:
+      enabled: false
+server:
+  port: 9090
