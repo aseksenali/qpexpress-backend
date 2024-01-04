@@ -23,6 +23,9 @@ configurations {
     }
 }
 
+val keycloakVersion = "22.0.4"
+val springMockkVersion = "4.0.2"
+
 repositories {
     mavenCentral()
 }
@@ -37,7 +40,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.keycloak:keycloak-admin-client:22.0.4")
+    implementation("org.keycloak:keycloak-admin-client:${keycloakVersion}")
     implementation("io.projectreactor:reactor-core")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
@@ -47,7 +50,7 @@ dependencies {
         exclude(module = "mockito-core")
     }
     testImplementation("com.h2database:h2")
-    testImplementation("com.ninja-squad:springmockk:4.0.2")
+    testImplementation("com.ninja-squad:springmockk:${springMockkVersion}")
     testImplementation("org.springframework.security:spring-security-test")
 }
 
