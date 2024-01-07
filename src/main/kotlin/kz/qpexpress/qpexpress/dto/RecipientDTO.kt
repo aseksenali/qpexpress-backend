@@ -3,8 +3,8 @@ package kz.qpexpress.qpexpress.dto
 import kz.qpexpress.qpexpress.model.FileDB
 import java.time.LocalDate
 
-sealed interface ReceiverDTO {
-    data class CreateReceiverRequestDTO(
+sealed interface RecipientDTO {
+    data class CreateRecipientRequestDTO(
         val firstName: String,
         val lastName: String,
         val patronymic: String,
@@ -17,5 +17,5 @@ sealed interface ReceiverDTO {
         val district: String,
         val phoneNumber: String,
         val address: String,
-    ) : ReceiverDTO
+    ) : RecipientDTO
 }

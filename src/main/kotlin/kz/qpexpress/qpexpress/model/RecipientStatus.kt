@@ -1,6 +1,6 @@
 package kz.qpexpress.qpexpress.model
 
-enum class ReceiverStatus {
+enum class RecipientStatus {
     ACTIVE,
     INACTIVE,
     DELETED,

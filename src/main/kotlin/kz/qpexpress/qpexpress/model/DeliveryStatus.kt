@@ -1,7 +1,6 @@
 package kz.qpexpress.qpexpress.model
 
 enum class DeliveryStatus {
-    DRAFT,
     CREATED,
     DELIVERED_TO_WAREHOUSE,
     IN_THE_WAY,

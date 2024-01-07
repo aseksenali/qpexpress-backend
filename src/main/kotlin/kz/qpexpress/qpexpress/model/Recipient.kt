@@ -24,5 +24,7 @@ class Recipient: AbstractJpaPersistable() {
     lateinit var phoneNumber: String
     lateinit var address: String
     @Enumerated(EnumType.STRING)
-    lateinit var status: ReceiverStatus
+    lateinit var status: RecipientStatus
+    @OneToMany(mappedBy = "recipient")
+    var orders: MutableSet<Order> = mutableSetOf()
 }

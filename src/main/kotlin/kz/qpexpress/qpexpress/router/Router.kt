@@ -17,7 +17,8 @@ class RouterConfiguration(
     private val calculatorService: ICalculatorService,
     private val currencyService: ICurrencyService,
     private val fileService: IFileService,
-    private val receiverService: IReceiverService
+    private val recipientService: IRecipientService,
+    private val orderService: IOrderService
 ) {
     @Bean
     fun router() = router {
@@ -35,11 +36,16 @@ class RouterConfiguration(
                 GET("", userService::getMyInformation)
             }
             "my".nest {
-                "orders".nest {
+                "deliveries".nest {
                     GET("", deliveryService::getMyDeliveries)
                     POST("", deliveryService::createDelivery)
                     GET("{id}", deliveryService::getMyDeliveryById)
                     PUT("{id}", deliveryService::updateDelivery)
+                }
+                "orders".nest {
+                    GET("", orderService::getMyOrders)
+                    PUT("{id}", orderService::updateOrder)
+                    DELETE("{id}", orderService::deleteOrder)
                 }
             }
             "addresses".nest {
@@ -49,7 +55,7 @@ class RouterConfiguration(
                 PUT("{id}", addressService::updateAddress)
                 DELETE("{id}", addressService::deleteAddress)
             }
-            "orders".nest {
+            "deliveries".nest {
                 GET("", deliveryService::getAllDeliveries)
                 GET("{id}", deliveryService::getDeliveryById)
                 PUT("{id}", deliveryService::updateDelivery)
@@ -73,8 +79,15 @@ class RouterConfiguration(
             "files".nest {
                 GET("{id}", fileService::getFileById)
             }
-            "receivers".nest {
-                POST("", receiverService::createReceiver)
+            "recipients".nest {
+                POST("", recipientService::createRecipient)
+            }
+            "orders".nest {
+                GET("", orderService::getOrders)
+                POST("", orderService::createOrder)
+                GET("{id}", orderService::getOrderById)
+                PUT("{id}", orderService::updateOrder)
+                DELETE("{id}", orderService::deleteOrder)
             }
         }
     }

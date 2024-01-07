@@ -1,18 +1,18 @@
 package kz.qpexpress.qpexpress.handler
 
-import kz.qpexpress.qpexpress.dto.ReceiverDTO
+import kz.qpexpress.qpexpress.dto.RecipientDTO
 import kz.qpexpress.qpexpress.model.Recipient
-import kz.qpexpress.qpexpress.repository.ReceiverRepository
+import kz.qpexpress.qpexpress.repository.RecipientRepository
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.function.ServerResponse
 import java.util.*
 
 @Service
-class ReceiverHandler(
-    private val receiverRepository: ReceiverRepository
-): IReceiverHandler {
-    override fun createReceiver(data: ReceiverDTO.CreateReceiverRequestDTO, userId: UUID): ServerResponse {
-        val savedEntity = receiverRepository.save(
+class RecipientHandler(
+    private val recipientRepository: RecipientRepository
+): IRecipientHandler {
+    override fun createRecipient(data: RecipientDTO.CreateRecipientRequestDTO, userId: UUID): ServerResponse {
+        val savedEntity = recipientRepository.save(
             Recipient().also {
                 it.userId = userId
                 it.firstName = data.firstName
