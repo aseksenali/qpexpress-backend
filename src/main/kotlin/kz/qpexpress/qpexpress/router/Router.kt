@@ -18,7 +18,8 @@ class RouterConfiguration(
     private val currencyService: ICurrencyService,
     private val fileService: IFileService,
     private val recipientService: IRecipientService,
-    private val orderService: IOrderService
+    private val orderService: IOrderService,
+    private val goodService: IGoodService,
 ) {
     @Bean
     fun router() = router {
@@ -34,11 +35,11 @@ class RouterConfiguration(
             }
             "me".nest {
                 GET("", userService::getMyInformation)
+                PUT("", userService::updateMyInformation)
             }
             "my".nest {
                 "deliveries".nest {
                     GET("", deliveryService::getMyDeliveries)
-                    POST("", deliveryService::createDelivery)
                     GET("{id}", deliveryService::getMyDeliveryById)
                     PUT("{id}", deliveryService::updateDelivery)
                 }
@@ -47,6 +48,16 @@ class RouterConfiguration(
                     PUT("{id}", orderService::updateOrder)
                     DELETE("{id}", orderService::deleteOrder)
                 }
+                "recipients".nest {
+                    GET("", recipientService::getMyRecipients)
+                    POST("", recipientService::createRecipient)
+                    PUT("{id}", recipientService::updateRecipient)
+                }
+            }
+            "recipients".nest {
+                GET("", recipientService::getRecipients)
+                PATCH("{id}/deny", recipientService::denyRecipient)
+                PATCH("{id}/accept", recipientService::acceptRecipient)
             }
             "addresses".nest {
                 GET("", addressService::getAddresses)
@@ -58,11 +69,13 @@ class RouterConfiguration(
             "deliveries".nest {
                 GET("", deliveryService::getAllDeliveries)
                 GET("{id}", deliveryService::getDeliveryById)
+                POST("", deliveryService::createDelivery)
                 PUT("{id}", deliveryService::updateDelivery)
                 DELETE("{id}", deliveryService::deleteDelivery)
             }
             "users".nest {
-                GET("", userService::getAll)
+                GET("", userService::getAllWithRecipient)
+                GET("{id}", userService::getUserById)
             }
             "countries".nest {
                 GET("", countryService::getAllCountries)
@@ -78,16 +91,21 @@ class RouterConfiguration(
             }
             "files".nest {
                 GET("{id}", fileService::getFileById)
-            }
-            "recipients".nest {
-                POST("", recipientService::createRecipient)
+                POST("", fileService::uploadFile)
+                GET("{id}/download", fileService::downloadFileById)
             }
             "orders".nest {
                 GET("", orderService::getOrders)
                 POST("", orderService::createOrder)
-                GET("{id}", orderService::getOrderById)
-                PUT("{id}", orderService::updateOrder)
-                DELETE("{id}", orderService::deleteOrder)
+                "{id}".nest {
+                    GET("", orderService::getOrderById)
+                    PUT("", orderService::updateOrder)
+                    DELETE("", orderService::deleteOrder)
+                    POST("goods", goodService::createGood)
+                }
+            }
+            "goods".nest {
+                GET("", goodService::getGoods)
             }
         }
     }

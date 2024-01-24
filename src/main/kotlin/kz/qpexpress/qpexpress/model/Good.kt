@@ -8,13 +8,13 @@ import java.util.*
 class Good: AbstractJpaPersistable() {
     lateinit var name: String
     lateinit var description: String
+    lateinit var customOrderId: String
     @ManyToOne
     @JoinColumn(name = "country_id")
     lateinit var country: Country
-    lateinit var customOrderId: String
     lateinit var link: String
     @Column(name = "price", nullable = false)
-    var price: Float? = null
+    var price: Float = 0.0f
     @ManyToOne
     @JoinColumn(name = "currency_id")
     lateinit var currency: Currency
@@ -31,6 +31,9 @@ class Good: AbstractJpaPersistable() {
     var delivery: Delivery? = null
     var quantity: Int = 1
     lateinit var userId: UUID
+    @ManyToOne
+    @JoinColumn(name = "recipient_id", nullable = false)
+    lateinit var recipient: Recipient
     @Enumerated(EnumType.STRING)
     lateinit var status: GoodStatus
 
@@ -43,7 +46,6 @@ class Good: AbstractJpaPersistable() {
         if (name != other.name) return false
         if (description != other.description) return false
         if (country != other.country) return false
-        if (customOrderId != other.customOrderId) return false
         if (link != other.link) return false
         if (price != other.price) return false
         if (currency != other.currency) return false
@@ -60,14 +62,12 @@ class Good: AbstractJpaPersistable() {
         var result = name.hashCode()
         result = 31 * result + description.hashCode()
         result = 31 * result + country.hashCode()
-        result = 31 * result + customOrderId.hashCode()
         result = 31 * result + link.hashCode()
-        result = 31 * result + (price?.hashCode() ?: 0)
+        result = 31 * result + (price.hashCode())
         result = 31 * result + currency.hashCode()
         result = 31 * result + (invoice?.hashCode() ?: 0)
         result = 31 * result + (trackingNumber?.hashCode() ?: 0)
         result = 31 * result + originalBox.hashCode()
-        result = 31 * result + order.hashCode()
         result = 31 * result + (delivery?.hashCode() ?: 0)
         return result
     }

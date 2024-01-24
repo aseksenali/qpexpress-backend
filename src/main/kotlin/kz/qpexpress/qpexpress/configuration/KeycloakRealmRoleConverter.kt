@@ -9,11 +9,9 @@ import java.util.stream.Collectors
 
 class KeycloakRealmRoleConverter : Converter<Jwt, Collection<GrantedAuthority>> {
     override fun convert(jwt: Jwt): Collection<GrantedAuthority>? {
-        val resourceAccess = jwt.getClaimAsMap("resource_access")
-        if (resourceAccess.isNullOrEmpty()) return emptyList()
-        val reactAccess = resourceAccess["react-app"] as Map<*, *>?
-        if (reactAccess.isNullOrEmpty()) return emptyList()
-        val rolesList = reactAccess["roles"] ?: return emptyList()
+        val realmAccess = jwt.getClaimAsMap("realm_access")
+        if (realmAccess.isNullOrEmpty()) return emptyList()
+        val rolesList = realmAccess["roles"] ?: return emptyList()
         if (rolesList !is List<*> || rolesList.isEmpty()) return emptyList()
         val roles = rolesList.filterIsInstance<String>()
         return roles.stream()

@@ -14,8 +14,13 @@ sealed interface CurrencyDTO {
         }
     }
 
-    data class CurrencyResponse(
+    data class CurrencyResponseDTO(
         val id: UUID,
         val name: String,
-    ) : CurrencyDTO
+    ) : CurrencyDTO {
+        constructor(currency: Currency) : this(
+            id = currency.id!!,
+            name = currency.name
+        )
+    }
 }

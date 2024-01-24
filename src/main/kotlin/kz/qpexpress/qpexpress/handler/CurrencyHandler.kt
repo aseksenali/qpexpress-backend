@@ -8,18 +8,15 @@ import org.springframework.web.servlet.function.ServerResponse
 @Service
 class CurrencyHandler(
     private val currencyRepository: CurrencyRepository
-): ICurrencyHandler {
+) : ICurrencyHandler {
     override fun createCurrency(data: CurrencyDTO.CreateCurrencyDTO): ServerResponse {
         val savingEntity = data.toEntity()
         val result = currencyRepository.save(savingEntity)
-        return ServerResponse.ok().body(CurrencyDTO.CurrencyResponse(
-            id = result.id!!,
-            name = result.name,
-        ))
+        return ServerResponse.ok().body(CurrencyDTO.CurrencyResponseDTO(result))
     }
 
     override fun getAllCurrencies(): ServerResponse {
-        val result = currencyRepository.findAll()
+        val result = currencyRepository.findAll().map { CurrencyDTO.CurrencyResponseDTO(it) }
         return ServerResponse.ok().body(result)
     }
 }

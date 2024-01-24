@@ -5,5 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface RecipientRepository: JpaRepository<Recipient, UUID> {
-    fun findByUserId(userId: UUID): Recipient?
+    fun findAllByUserId(userId: UUID): List<Recipient>
+    fun getAllByUserId(userId: UUID): List<RecipientIdAndStatus>
 }

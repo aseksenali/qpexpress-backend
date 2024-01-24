@@ -10,7 +10,7 @@ class CountryHandler(
     private val countryRepository: CountryRepository,
 ): ICountryHandler {
     override fun createCountry(data: CountryDTO.CreateCountryDTO): ServerResponse {
-val savingEntity = data.toEntity()
+        val savingEntity = data.toEntity()
         val result = countryRepository.save(savingEntity)
         return ServerResponse.ok().body(CountryDTO.CountryResponse(
             id = result.id!!,
@@ -22,5 +22,4 @@ val savingEntity = data.toEntity()
         val result = countryRepository.findAll()
         return ServerResponse.ok().body(result)
     }
-
 }

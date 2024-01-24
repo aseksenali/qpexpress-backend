@@ -4,13 +4,14 @@ import jakarta.persistence.*
 import java.util.*
 
 @Entity
-@Table(name = "orders")
+@Table(name = "orders", indexes = [Index(name = "order_number_index", columnList = "orderNumber", unique = true)])
 class Order: AbstractJpaPersistable() {
     lateinit var userId: UUID
+    @Column(unique = true)
     lateinit var orderNumber: String
     @Enumerated(EnumType.STRING)
     lateinit var status: OrderStatus
-    @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     var goods: MutableSet<Good> = mutableSetOf()
 
     @ManyToOne(

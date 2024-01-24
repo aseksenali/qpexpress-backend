@@ -1,8 +1,10 @@
 package kz.qpexpress.qpexpress.handler
 
+import kotlin.random.Random
 import kz.qpexpress.qpexpress.dto.DeliveryDTO
 import kz.qpexpress.qpexpress.model.Delivery
 import kz.qpexpress.qpexpress.model.DeliveryStatus
+import kz.qpexpress.qpexpress.model.GoodStatus
 import kz.qpexpress.qpexpress.repository.*
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
@@ -14,9 +16,6 @@ import java.util.*
 class DeliveryHandler(
     private val deliveryRepository: DeliveryRepository,
     private val currencyRepository: CurrencyRepository,
-    private val countryRepository: CountryRepository,
-    private val fileDBRepository: FileDBRepository,
-    private val recipientRepository: RecipientRepository,
     private val goodRepository: GoodRepository,
 ) : IDeliveryHandler {
     @PreAuthorize("hasAuthority('deliveries:write')")
@@ -24,12 +23,28 @@ class DeliveryHandler(
         val goods = data.goods.map {
             goodRepository.findByIdOrNull(it) ?: return ServerResponse.notFound().build()
         }.toMutableSet()
+        val currency = currencyRepository.findByIdOrNull(data.currencyId) ?: return ServerResponse.notFound().build()
         val delivery = Delivery().apply {
             this.userId = data.userId
+            this.recipient = data.recipient
             this.goods = goods
+            this.currency = currency
+            this.weight = data.weight
+            this.kazPostTrackNumber = data.kazPostTrackNumber
+            this.payed = false
+            this.price = data.price
+            this.status = DeliveryStatus.IN_THE_WAY
+            this.invoice = data.invoice
+            this.deliveryNumber = generateDeliveryNumber()
         }
         val result = deliveryRepository.save(delivery)
-        return ServerResponse.ok().body(result)
+        delivery.goods.forEach {
+            it.status = GoodStatus.WAITING_FOR_PAYMENT
+            it.delivery = result
+            goodRepository.save(it)
+        }
+        val response = DeliveryDTO.DeliveryResponseDTO(result)
+        return ServerResponse.ok().body(response)
     }
 
     @PreAuthorize("hasAuthority('deliveries:update')")
@@ -61,25 +76,32 @@ class DeliveryHandler(
 
     @PreAuthorize("hasAuthority('deliveries:read')")
     override fun getAllDeliveries(): ServerResponse {
-        val orders = deliveryRepository.findAll()
-        return ServerResponse.ok().body(orders)
+        val deliveries = deliveryRepository.findAll().map { DeliveryDTO.DeliveryResponseDTO(it) }
+        return ServerResponse.ok().body(deliveries)
     }
 
     @PreAuthorize("hasAuthority('deliveries:read')")
     override fun getDeliveryById(id: UUID): ServerResponse {
-        val order = deliveryRepository.findById(id).get()
-        return ServerResponse.ok().body(order)
+        val delivery = deliveryRepository.findById(id).get()
+        return ServerResponse.ok().body(DeliveryDTO.DeliveryResponseDTO(delivery))
     }
 
     @PreAuthorize("isAuthenticated()")
     override fun getMyDeliveries(userId: UUID): ServerResponse {
-        val orders = deliveryRepository.findAllByUserId(userId)
-        return ServerResponse.ok().body(orders)
+        val deliveries = deliveryRepository.findAllByUserId(userId).map { DeliveryDTO.DeliveryResponseDTO(it) }
+        return ServerResponse.ok().body(deliveries)
     }
 
     @PreAuthorize("isAuthenticated()")
     override fun getMyDeliveryById(userId: UUID, deliveryId: UUID): ServerResponse {
-        val order = deliveryRepository.findByIdAndUserId(deliveryId, userId) ?: return ServerResponse.notFound().build()
-        return ServerResponse.ok().body(order)
+        val delivery = deliveryRepository.findByIdAndUserId(deliveryId, userId) ?: return ServerResponse.notFound().build()
+        return ServerResponse.ok().body(DeliveryDTO.DeliveryResponseDTO(delivery))
+    }
+
+    private val generateDeliveryNumber: () -> String = {
+        val letters = ('A'..'Z').toList()
+        val prefix = List(3) { letters.random() }.joinToString("")
+        val suffix = List(10) { Random.nextInt(0, 10) }.joinToString("")
+        "$prefix-$suffix"
     }
 }
