@@ -20,6 +20,7 @@ class RouterConfiguration(
     private val recipientService: IRecipientService,
     private val orderService: IOrderService,
     private val goodService: IGoodService,
+    private val kaspiService: IKaspiService
 ) {
     @Bean
     fun router() = router {
@@ -106,6 +107,19 @@ class RouterConfiguration(
             }
             "goods".nest {
                 GET("", goodService::getGoods)
+            }
+            "payment".nest {
+                "kaspi".nest {
+                    GET("tradepoints", kaspiService::getTradePoints)
+                    "{id}".nest {
+                        GET("status", kaspiService::getPaymentStatus)
+                        GET("", kaspiService::getPaymentDetails)
+                    }
+                    POST("register", kaspiService::registerDevice)
+                    POST("create", kaspiService::createPayment)
+                    POST("create-link", kaspiService::createLink)
+                    POST("create-qr", kaspiService::createQR)
+                }
             }
         }
     }

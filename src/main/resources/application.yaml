@@ -3,3 +3,29 @@ keycloak:
   auth-server-url: 'https://qpexpress.kz/auth'
   admin-username: 'askhat.seksenali@sentel.kz'
   admin-password: 'passwd'
+kaspi:
+  organization-bin: '230840030304'
+spring:
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+            instanceName: my-scheduler
+          jobStore:
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+            useProperties: false
+            dataSource: myDS
+            tablePrefix: QRTZ_
+          dataSource:
+            myDS:
+              driver: org.postgresql.Driver
+              URL: jdbc:postgresql://qpexpress.kz:5432/qpexpress?currentSchema=quartz
+              user: qpexpress-admin
+              password: F235vk26
+              maxConnections: 5

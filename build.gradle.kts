@@ -25,6 +25,7 @@ configurations {
 
 val keycloakVersion = "22.0.4"
 val springMockkVersion = "4.0.2"
+val mchangeVersion = "0.9.5.5"
 
 repositories {
     mavenCentral()
@@ -32,6 +33,8 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.boot:spring-boot-starter-quartz")
+    implementation("com.mchange:c3p0:$mchangeVersion")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -40,7 +43,7 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.keycloak:keycloak-admin-client:${keycloakVersion}")
+    implementation("org.keycloak:keycloak-admin-client:$keycloakVersion")
     implementation("io.projectreactor:reactor-core")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")

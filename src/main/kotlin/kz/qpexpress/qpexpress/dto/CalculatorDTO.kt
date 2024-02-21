@@ -6,12 +6,12 @@ sealed interface CalculatorDTO {
     data class CalculateDeliveryPriceRequestDTO(
         val countryId: UUID,
         val weight: Float?,
-        val price: Float?,
     ) : CalculatorDTO
 
     data class CalculateDeliveryPriceResponseDTO(
         val countryId: UUID,
         val weight: Float?,
-        val price: Float?,
+        val priceUSD: Float?,
+        val priceKZT: Float?,
     ) : CalculatorDTO
 }
