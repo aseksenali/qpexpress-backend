@@ -70,7 +70,7 @@ class KaspiService(
     }
 
     override fun getPaymentStatus(request: ServerRequest): ServerResponse {
-        val paymentId = request.pathVariable("id").toInt()
+        val paymentId = request.pathVariable("id").toLong()
         val response = kaspiHandler.getPaymentStatus(paymentId)
         logger.info("Response status: ${response.statusCode}")
         return if (response.statusCode == 0) {
@@ -81,12 +81,8 @@ class KaspiService(
     }
 
     override fun getPaymentDetails(request: ServerRequest): ServerResponse {
-        val paymentId = request.paramOrNull("paymentId")?.toInt()
-        val deviceToken = request.paramOrNull("deviceToken")
-        if (paymentId == null || deviceToken == null) {
-            return ServerResponse.badRequest().build()
-        }
-        val response = kaspiHandler.getPaymentDetails(paymentId, deviceToken)
+        val paymentId = request.paramOrNull("paymentId")?.toLong() ?: return ServerResponse.badRequest().build()
+        val response = kaspiHandler.getPaymentDetails(paymentId)
         logger.info("Response status: ${response.statusCode}")
         return if (response.statusCode == 0) {
             ServerResponse.ok().bodyWithType(response)

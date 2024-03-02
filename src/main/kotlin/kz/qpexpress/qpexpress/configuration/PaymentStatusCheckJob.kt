@@ -13,7 +13,7 @@ class PaymentStatusCheckJob(
     private val kaspiPaymentRepository: KaspiPaymentRepository,
 ) : QuartzJobBean() {
     override fun executeInternal(context: JobExecutionContext) {
-        val paymentId = context.mergedJobDataMap.getInt("paymentId")
+        val paymentId = context.mergedJobDataMap.getLong("paymentId")
         val statusResponse = kaspiHandler.getPaymentStatus(paymentId)
         val status = statusResponse.data.status
         if (status == PaymentStatus.ERROR || status == PaymentStatus.PROCESSED) {
@@ -23,7 +23,7 @@ class PaymentStatusCheckJob(
     }
 
     // Замените этот метод на реальный метод для работы с вашей базой данных
-    fun updatePaymentStatus(paymentId: Int, status: PaymentStatus, context: JobExecutionContext) {
+    fun updatePaymentStatus(paymentId: Long, status: PaymentStatus, context: JobExecutionContext) {
         val payment = kaspiPaymentRepository.findByPaymentId(paymentId)
         if (payment == null) {
             // Обработка ошибки

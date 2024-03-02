@@ -5,6 +5,7 @@ keycloak:
   admin-password: 'passwd'
 kaspi:
   organization-bin: '230840030304'
+  device-token: 'd87e6939-0a82-4f9b-8561-3473ead74ed1'
 spring:
   quartz:
     job-store-type: jdbc

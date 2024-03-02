@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 class PaymentStatusChecker(
     private val scheduler: Scheduler
 ) {
-    fun startChecking(paymentId: Int, interval: Long) {
+    fun startChecking(paymentId: Long, interval: Long) {
         val jobDetail = JobBuilder.newJob(PaymentStatusCheckJob::class.java)
             .withIdentity("job$paymentId", "group1")
             .usingJobData("paymentId", paymentId)
@@ -24,7 +24,7 @@ class PaymentStatusChecker(
         scheduler.scheduleJob(jobDetail, trigger)
     }
 
-    fun stopChecking(paymentId: Int) {
+    fun stopChecking(paymentId: Long) {
         scheduler.unscheduleJob(TriggerKey.triggerKey("trigger$paymentId", "group1"))
     }
 }

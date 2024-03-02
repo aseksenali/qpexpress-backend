@@ -21,11 +21,6 @@ class LoggingRequestInterceptor : ClientHttpRequestInterceptor {
         logger.info("Request Method: ${request.method}")
         logger.info("Request Headers: ${request.headers}")
         logger.info("Request Body: ${String(body, StandardCharsets.UTF_8)}")
-        val response = execution.execute(request, body)
-        if (response.statusCode.is2xxSuccessful) {
-            val responseBody = StreamUtils.copyToString(response.body, Charset.defaultCharset())
-            println("Response: $responseBody")
-        }
-        return response
+        return execution.execute(request, body)
     }
 }

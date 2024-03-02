@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAlias
 import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 data class TradePoint(
     @JsonAlias("TradePointId")
@@ -22,17 +23,14 @@ sealed interface KaspiDTO {
         val phoneNumber: String,
         val amount: Double,
         val comment: String,
-        val deviceToken: String,
     ) : KaspiDTO
 
     data class CreateLinkRequest(
         val amount: Double,
-        val deviceToken: String,
     ) : KaspiDTO
 
     data class CreateQRCodeRequest(
         val amount: Double,
-        val deviceToken: String,
     ) : KaspiDTO
 
     data class KaspiResponse<T>(
@@ -50,42 +48,51 @@ sealed interface KaspiDTO {
 
         data class CreatePaymentResponse(
             @JsonAlias("QrPaymentId")
-            val paymentId: Int,
+            val paymentId: Long,
         ) : ResponseData
 
-        data class PaymentBehaviorOptions(
+        data class LinkPaymentBehaviorOptions(
             @JsonAlias("LinkActivationWaitTimeout")
-            val linkActivationWaitTimeout: Int,
+            val linkActivationWaitTimeout: Long,
             @JsonAlias("PaymentConfirmationTimeout")
-            val paymentConfirmationTimeout: Int,
+            val paymentConfirmationTimeout: Long,
             @JsonAlias("StatusPollingInterval")
-            val statusPollingInterval: Int,
+            val statusPollingInterval: Long,
+        )
+
+        data class QrPaymentBehaviorOptions(
+            @JsonAlias("QrCodeScanWaitTimeout")
+            val qrCodeScanWaitTimeout: Long,
+            @JsonAlias("PaymentConfirmationTimeout")
+            val paymentConfirmationTimeout: Long,
+            @JsonAlias("StatusPollingInterval")
+            val statusPollingInterval: Long,
         )
 
         data class CreateLinkResponse(
             @JsonAlias("PaymentLink")
             val paymentLink: String,
             @JsonAlias("ExpireDate")
-            val expireDate: LocalDateTime,
+            val expireDate: OffsetDateTime,
             @JsonAlias("PaymentId")
-            val paymentId: Int,
+            val paymentId: Long,
             @JsonAlias("PaymentMethods")
             val paymentMethods: List<String>,
             @JsonAlias("PaymentBehaviorOptions")
-            val paymentBehaviorOptions: PaymentBehaviorOptions,
+            val paymentBehaviorOptions: LinkPaymentBehaviorOptions,
         ) : ResponseData
 
         data class CreateQRCodeResponse(
             @JsonAlias("QrToken")
             val token: String,
             @JsonAlias("ExpireDate")
-            val expireDate: LocalDateTime,
+            val expireDate: OffsetDateTime,
             @JsonAlias("QrPaymentId")
-            val paymentId: Int,
+            val paymentId: Long,
             @JsonAlias("PaymentMethods")
             val paymentMethods: List<String>,
             @JsonAlias("QrPaymentBehaviorOptions")
-            val paymentBehaviorOptions: PaymentBehaviorOptions,
+            val paymentBehaviorOptions: QrPaymentBehaviorOptions,
         )
 
         data class PaymentStatusResponse(
@@ -96,7 +103,7 @@ sealed interface KaspiDTO {
 
         data class PaymentDetailsResponse(
             @JsonAlias("QrPaymentId")
-            val paymentId: Int,
+            val paymentId: Long,
             @JsonAlias("TotalAmount")
             val totalAmount: Double,
             @JsonAlias("AvailableReturnAmount")
