@@ -15,7 +15,7 @@ class Callback(
     /**
      * Decoded callback data
      */
-    private var data: Map<String, Any>? = null
+    private var data: MutableMap<String, Any>? = null
 
     /**
      * kz.jetpay.sdk.Callback signature
@@ -97,9 +97,12 @@ class Callback(
     @Throws(ProcessException::class)
     fun checkSignature(): Boolean {
         val signature = signature!!
-        removeParam("signature", data)
-
-        return signatureHandler.check(signature, data)
+        if (data == null) {
+            throw ProcessException("Undefined data")
+        } else {
+            removeParam("signature", data!!)
+            return signatureHandler.check(signature, data!!)
+        }
     }
 
     /**
@@ -157,9 +160,9 @@ class Callback(
         val mapper = ObjectMapper()
 
         try {
-            data = mapper.readValue<Map<String, Any>>(
+            data = mapper.readValue(
                 callbackData,
-                object : TypeReference<Map<String?, Any?>?>() {}
+                object : TypeReference<MutableMap<String, Any>>() {}
             ) as HashMap<String, Any>?
         } catch (e: IOException) {
             throw ProcessException(e)

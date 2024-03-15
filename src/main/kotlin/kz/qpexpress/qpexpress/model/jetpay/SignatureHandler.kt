@@ -1,5 +1,7 @@
 package kz.qpexpress.qpexpress.model.jetpay
 
+import kz.qpexpress.qpexpress.configuration.JetpayProperties
+import org.springframework.stereotype.Component
 import java.security.GeneralSecurityException
 import java.util.*
 import javax.crypto.Mac
@@ -9,7 +11,10 @@ import javax.crypto.spec.SecretKeySpec
 /**
  * Class for make/check signature
  */
-class SignatureHandler(private val secret: String = "") {
+@Component
+class SignatureHandler(
+    private val jetpayProperties: JetpayProperties
+) {
 
     /**
      * Need sort params before sign or not need
@@ -43,7 +48,7 @@ class SignatureHandler(private val secret: String = "") {
 
         try {
             val shaHMAC = Mac.getInstance(ALGORITHM)
-            val secretKey = SecretKeySpec(secret.toByteArray(), ALGORITHM)
+            val secretKey = SecretKeySpec(jetpayProperties.secretKey.toByteArray(), ALGORITHM)
             shaHMAC.init(secretKey)
             val hash = Base64.getEncoder().encodeToString(shaHMAC.doFinal(paramsStringToSign.toByteArray()))
             return hash

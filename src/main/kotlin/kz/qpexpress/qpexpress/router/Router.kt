@@ -90,6 +90,7 @@ class RouterConfiguration(
             "currencies".nest {
                 GET("", currencyService::getAllCurrencies)
                 POST("", currencyService::createCurrency)
+                GET("convert", currencyService::convertCurrency)
             }
             "files".nest {
                 GET("{id}", fileService::getFileById)
@@ -122,8 +123,8 @@ class RouterConfiguration(
                     POST("create-qr", kaspiService::createQR)
                 }
                 "jetpay".nest {
-                    POST("create", jetpayService::createJetPayPayment)
-                    POST("status", jetpayService::setJetPayPaymentStatus)
+                    GET("payment-page", jetpayService::getPaymentPageUrl)
+                    POST("update-status", jetpayService::updatePaymentStatus)
                 }
             }
         }

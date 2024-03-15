@@ -1,19 +1,15 @@
 package kz.qpexpress.qpexpress.model.jetpay
 
+import org.springframework.stereotype.Component
+
 /**
  * Class for communicate with our
  */
-class Gate(secret: String) {
-    /**
-     * kz.jetpay.sdk.SignatureHandler instance for check signature
-     */
-    private val signatureHandler: SignatureHandler = SignatureHandler(secret)
-
-    /**
-     * kz.jetpay.sdk.PaymentPage instance for build payment URL
-     */
-    private val paymentPageUrlBuilder: PaymentPage = PaymentPage(signatureHandler)
-
+@Component
+class Gate(
+    private val signatureHandler: SignatureHandler,
+    private val paymentPageUrlBuilder: PaymentPage
+) {
     /**
      * Method for set base payment page URL
      * @param url payment page URL

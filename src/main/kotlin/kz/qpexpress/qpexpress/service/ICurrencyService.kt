@@ -6,4 +6,5 @@ import org.springframework.web.servlet.function.ServerResponse
 interface ICurrencyService {
     fun createCurrency(request: ServerRequest): ServerResponse
     fun getAllCurrencies(request: ServerRequest): ServerResponse
+    fun convertCurrency(request: ServerRequest): ServerResponse
 }

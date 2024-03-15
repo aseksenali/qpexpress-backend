@@ -1,18 +1,18 @@
 package kz.qpexpress.qpexpress.model.jetpay
 
+import org.springframework.stereotype.Component
 import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
-import java.util.stream.Collectors
 
 
 /**
  * Class for build payment URL
  */
-class PaymentPage
-    (
+@Component
+class PaymentPage(
     private val signatureHandler: SignatureHandler,
-    var baseUrl: String = "https://paymentpage.jetpay.kz/payment"
 ) {
+    var baseUrl: String = "https://paymentpage.jetpay.kz/payment"
 
     /**
      * Method build payment URL
@@ -22,10 +22,10 @@ class PaymentPage
     fun getUrl(payment: Payment): String {
         val signature = "&signature=" + encode(signatureHandler.sign(payment.params))
         val query = payment.params.entries.map { e ->
-                e.key + "=" + encode(
-                    e.value
-                )
-            }.joinToString { "&" }
+            e.key + "=" + encode(
+                e.value
+            )
+        }.joinToString { "&" }
 
         return "$baseUrl?$query$signature"
     }

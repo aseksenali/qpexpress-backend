@@ -1,5 +1,8 @@
 package kz.qpexpress.qpexpress.model.jetpay
 
+import kz.qpexpress.qpexpress.configuration.JetpayProperties
+import org.springframework.context.annotation.Scope
+import org.springframework.stereotype.Component
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
@@ -9,7 +12,11 @@ import java.time.format.DateTimeFormatter
  * Has constants like TYPE_* - possible types of payment
  * and some constants with params names
  */
-class Payment(projectId: String) {
+@Component
+@Scope("prototype")
+class Payment(
+    jetpayProperties: JetpayProperties
+) {
     /**
      * Method return payment params
      * @return map with params
@@ -17,7 +24,7 @@ class Payment(projectId: String) {
     /**
      * Map with payment params
      */
-    val params = mutableMapOf(PROJECT_ID to projectId, "interface_type" to INTERFACE_TYPE)
+    val params = mutableMapOf(PROJECT_ID to jetpayProperties.projectId, "interface_type" to INTERFACE_TYPE)
 
 
     /**
