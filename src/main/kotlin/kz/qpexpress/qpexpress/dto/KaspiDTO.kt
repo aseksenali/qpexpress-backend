@@ -5,6 +5,7 @@ import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.util.*
 
 data class TradePoint(
     @JsonAlias("TradePointId")
@@ -27,17 +28,21 @@ sealed interface KaspiDTO {
 
     data class CreateLinkRequest(
         val amount: Double,
+        val deliveryId: UUID,
     ) : KaspiDTO
 
     data class CreateQRCodeRequest(
         val amount: Double,
+        val deliveryId: UUID,
     ) : KaspiDTO
 
     data class KaspiResponse<T>(
         @JsonAlias("StatusCode")
         val statusCode: Int,
         @JsonAlias("Data")
-        val data: T
+        val data: T?,
+        @JsonAlias("Message")
+        val message: String?,
     ) : KaspiDTO
 
     sealed interface ResponseData {

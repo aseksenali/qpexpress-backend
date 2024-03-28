@@ -2,6 +2,7 @@ package kz.qpexpress.qpexpress.service
 
 import kz.qpexpress.qpexpress.dto.AddressDTO
 import kz.qpexpress.qpexpress.handler.IAddressHandler
+import kz.qpexpress.qpexpress.model.Language
 import kz.qpexpress.qpexpress.util.toUUID
 import org.springframework.stereotype.Service
 import org.springframework.web.servlet.function.ServerRequest
@@ -14,7 +15,14 @@ class AddressService(
 ) : IAddressService {
     override fun createAddress(request: ServerRequest): ServerResponse {
         val data = request.body<AddressDTO.CreateAddressDTO>()
-        return addressHandler.createAddress(data)
+        val language = request.pathVariable("language")
+        val languageEnum = when (language) {
+            "ru" -> Language.RUSSIAN
+            "en" -> Language.ENGLISH
+            "zh" -> Language.CHINESE
+            else -> return ServerResponse.badRequest().build()
+        }
+        return addressHandler.createAddress(data, languageEnum)
     }
 
     override fun updateAddress(request: ServerRequest): ServerResponse {
@@ -34,6 +42,13 @@ class AddressService(
     }
 
     override fun getAddresses(request: ServerRequest): ServerResponse {
-        return addressHandler.getAddresses()
+        val language = request.pathVariable("language")
+        val languageEnum = when (language) {
+            "ru" -> Language.RUSSIAN
+            "en" -> Language.ENGLISH
+            "zh" -> Language.CHINESE
+            else -> return ServerResponse.badRequest().build()
+        }
+        return addressHandler.getAddresses(languageEnum)
     }
 }

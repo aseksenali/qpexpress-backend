@@ -16,9 +16,11 @@ class CityHandler(
         val country = countryRepository.findByIdOrNull(data.countryId) ?: return ServerResponse.badRequest().build()
         val savingEntity = data.toEntity(country)
         val result = cityRepository.save(savingEntity)
-        return ServerResponse.ok().body(CityDTO.CityResponse(
+        return ServerResponse.ok().body(CityDTO.CityResponseDTO(
             id = result.id!!,
-            name = result.name,
+            nameRus = result.nameRus,
+            nameChn = result.nameChn,
+            nameEng = result.nameEng,
             countryId = country.id!!,
         ))
     }

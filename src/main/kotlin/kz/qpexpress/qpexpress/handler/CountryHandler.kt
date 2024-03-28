@@ -12,9 +12,11 @@ class CountryHandler(
     override fun createCountry(data: CountryDTO.CreateCountryDTO): ServerResponse {
         val savingEntity = data.toEntity()
         val result = countryRepository.save(savingEntity)
-        return ServerResponse.ok().body(CountryDTO.CountryResponse(
+        return ServerResponse.ok().body(CountryDTO.CountryResponseDTO(
             id = result.id!!,
-            name = result.name,
+            nameRus = result.nameRus,
+            nameChn = result.nameChn,
+            nameEng = result.nameEng
         ))
     }
 

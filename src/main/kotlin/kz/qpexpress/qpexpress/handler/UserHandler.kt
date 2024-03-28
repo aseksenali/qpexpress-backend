@@ -58,6 +58,7 @@ class UserHandler(
         user.apply {
             this.firstName = data.firstName
             this.lastName = data.lastName
+            this.attributes = this.attributes ?: HashMap()
             this.attributes["patronymic"] = listOf(data.patronymic)
             this.email = data.email
         }

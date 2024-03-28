@@ -6,20 +6,26 @@ import java.util.*
 
 sealed interface CityDTO {
     data class CreateCityDTO(
-        val name: String,
+        val nameRus: String,
+        val nameChn: String,
+        val nameEng: String,
         val countryId: UUID
     ) : CityDTO {
         fun toEntity(country: Country): City {
             val city = City()
-            city.name = name
+            city.nameRus = nameRus
+            city.nameChn = nameChn
+            city.nameEng = nameEng
             city.country = country
             return city
         }
     }
 
-    data class CityResponse(
+    data class CityResponseDTO(
         val id: UUID,
-        val name: String,
+        val nameRus: String,
+        val nameChn: String,
+        val nameEng: String,
         val countryId: UUID,
     ) : CityDTO
 }

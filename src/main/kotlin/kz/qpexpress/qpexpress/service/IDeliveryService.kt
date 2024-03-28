@@ -8,6 +8,7 @@ interface IDeliveryService {
     fun getDeliveryById(request: ServerRequest): ServerResponse
     fun createDelivery(request: ServerRequest): ServerResponse
     fun updateDelivery(request: ServerRequest): ServerResponse
+    fun updateDeliveryStatus(request: ServerRequest): ServerResponse
     fun deleteDelivery(request: ServerRequest): ServerResponse
     fun getMyDeliveries(request: ServerRequest): ServerResponse
     fun getMyDeliveryById(request: ServerRequest): ServerResponse

@@ -6,7 +6,9 @@ import java.util.*
 @Entity
 @Table(name = "goods")
 class Good: AbstractJpaPersistable() {
+    @Column(name = "name", nullable = false, length = 4096)
     lateinit var name: String
+    @Column(name = "description", length = 4096)
     lateinit var description: String
     lateinit var customOrderId: String
     @ManyToOne

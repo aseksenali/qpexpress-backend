@@ -22,6 +22,7 @@ class RouterConfiguration(
     private val goodService: IGoodService,
     private val kaspiService: IKaspiService,
     private val jetpayService: IJetpayService,
+    private val paymentService: IPaymentService,
 ) {
     @Bean
     fun router() = router {
@@ -62,17 +63,20 @@ class RouterConfiguration(
                 PATCH("{id}/accept", recipientService::acceptRecipient)
             }
             "addresses".nest {
-                GET("", addressService::getAddresses)
-                GET("{id}", addressService::getAddress)
-                POST("", addressService::createAddress)
-                PUT("{id}", addressService::updateAddress)
-                DELETE("{id}", addressService::deleteAddress)
+                "{language}".nest {
+                    GET("", addressService::getAddresses)
+                    GET("{id}", addressService::getAddress)
+                    POST("", addressService::createAddress)
+                    PUT("{id}", addressService::updateAddress)
+                    DELETE("{id}", addressService::deleteAddress)
+                }
             }
             "deliveries".nest {
                 GET("", deliveryService::getAllDeliveries)
                 GET("{id}", deliveryService::getDeliveryById)
                 POST("", deliveryService::createDelivery)
                 PUT("{id}", deliveryService::updateDelivery)
+                PUT("{id}/status", deliveryService::updateDeliveryStatus)
                 DELETE("{id}", deliveryService::deleteDelivery)
             }
             "users".nest {
@@ -88,9 +92,9 @@ class RouterConfiguration(
                 POST("", cityService::createCity)
             }
             "currencies".nest {
+                GET("convert", currencyService::convertCurrency)
                 GET("", currencyService::getAllCurrencies)
                 POST("", currencyService::createCurrency)
-                GET("convert", currencyService::convertCurrency)
             }
             "files".nest {
                 GET("{id}", fileService::getFileById)
@@ -111,9 +115,10 @@ class RouterConfiguration(
                 GET("", goodService::getGoods)
             }
             "payment".nest {
+                GET("{deliveryId}/status", paymentService::getPaymentStatus)
                 "kaspi".nest {
                     GET("tradepoints", kaspiService::getTradePoints)
-                    "{id}".nest {
+                    "{deliveryId}".nest {
                         GET("status", kaspiService::getPaymentStatus)
                         GET("", kaspiService::getPaymentDetails)
                     }
@@ -123,8 +128,8 @@ class RouterConfiguration(
                     POST("create-qr", kaspiService::createQR)
                 }
                 "jetpay".nest {
-                    GET("payment-page", jetpayService::getPaymentPageUrl)
-                    POST("update-status", jetpayService::updatePaymentStatus)
+                    POST("payment-page", jetpayService::getPaymentPageUrl)
+                    POST("status", jetpayService::updatePaymentStatus)
                 }
             }
         }

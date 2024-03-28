@@ -19,7 +19,27 @@ class SignatureHandler(
     /**
      * Need sort params before sign or not need
      */
-    private var sortParams = true
+    private var sortParams: Boolean = true
+
+    /**
+     * Delimiter for separate key and value
+     */
+    private final val delimiterKey: Char = ':'
+
+    /**
+     * Delimiter for separate params
+     */
+    private final val delimiterParam: String = ";"
+
+    /**
+     * Ignore keys from signature
+     */
+    private final val ignoreKeys = arrayOf("frame_mode")
+
+    /**
+     * Crypto algorithm
+     */
+    private final val algorithm: String = "HmacSHA512"
 
     /**
      * Method for check signature
@@ -37,18 +57,18 @@ class SignatureHandler(
      * @return signature
      */
     fun sign(params: Map<String, Any>): String {
-        val paramsToSign = getParamsToSign(params = params, ignore = IGNORE_KEYS)
-        val paramsListToSign = paramsToSign.values.toList()
+        val paramsToSign = getParamsToSign(params = params, ignore = ignoreKeys)
+        var paramsListToSign = paramsToSign.values.toList()
 
         if (sortParams) {
-            paramsListToSign.sortedBy { it }
+            paramsListToSign = paramsListToSign.sortedBy { it }
         }
 
-        val paramsStringToSign = paramsListToSign.joinToString(DELIMITER_PARAM)
+        val paramsStringToSign = paramsListToSign.joinToString(delimiterParam)
 
         try {
-            val shaHMAC = Mac.getInstance(ALGORITHM)
-            val secretKey = SecretKeySpec(jetpayProperties.secretKey.toByteArray(), ALGORITHM)
+            val shaHMAC = Mac.getInstance(algorithm)
+            val secretKey = SecretKeySpec(jetpayProperties.secretKey.toByteArray(), algorithm)
             shaHMAC.init(secretKey)
             val hash = Base64.getEncoder().encodeToString(shaHMAC.doFinal(paramsStringToSign.toByteArray()))
             return hash
@@ -70,12 +90,12 @@ class SignatureHandler(
         prefix: String = ""
     ): Map<String, String> {
         return params.entries
-            .filter { param -> ignore.any { it == param.key } }
+            .filter { param -> ignore.none { it == param.key } }
             .flatMap { param ->
-                val key = prefix + (if (prefix == "") "" else DELIMITER_KEY) + param.key
+                val key = prefix + (if (prefix == "") "" else delimiterKey) + param.key
                 when (val value = param.value) {
                     is Boolean -> {
-                        listOf(key to key + DELIMITER_KEY + if (value) "1" else "0")
+                        listOf(key to key + delimiterKey + if (value) "1" else "0")
                     }
 
                     is List<*> -> {
@@ -91,32 +111,10 @@ class SignatureHandler(
                     }
 
                     else -> {
-                        listOf(key to key + DELIMITER_KEY + value.toString())
+                        listOf(key to key + delimiterKey + value.toString())
                     }
                 }
             }
             .toMap()
-    }
-
-    companion object {
-        /**
-         * Delimiter for separate key and value
-         */
-        private const val DELIMITER_KEY = ':'
-
-        /**
-         * Delimiter for separate params
-         */
-        private const val DELIMITER_PARAM = ";"
-
-        /**
-         * Ignore keys from signature
-         */
-        private val IGNORE_KEYS = arrayOf("frame_mode")
-
-        /**
-         * Crypto algorithm
-         */
-        private val ALGORITHM = "HmacSHA512"
     }
 }

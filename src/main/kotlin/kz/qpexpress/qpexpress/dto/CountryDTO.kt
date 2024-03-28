@@ -9,13 +9,24 @@ sealed interface CountryDTO {
     ) : CountryDTO {
         fun toEntity(): Country {
             val country = Country()
-            country.name = name
+            country.nameRus = name
+            country.nameChn = name
+            country.nameEng = name
             return country
         }
     }
 
-    data class CountryResponse(
+    data class CountryResponseDTO(
         val id: UUID,
-        val name: String,
-    ) : CountryDTO
+        val nameRus: String,
+        val nameChn: String,
+        val nameEng: String
+    ) : CountryDTO {
+        constructor(country: Country) : this(
+            id = country.id!!,
+            nameRus = country.nameRus,
+            nameChn = country.nameChn,
+            nameEng = country.nameEng
+        )
+    }
 }

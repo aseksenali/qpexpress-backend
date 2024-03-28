@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonValue
 
 enum class PaymentStatus(val status: String) {
+    NOT_CREATED("NotCreated"),
     CREATING("Creating"),
     QR_TOKEN_CREATED("QrTokenCreated"),
     WAIT("Wait"),

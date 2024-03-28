@@ -2,25 +2,26 @@ package kz.qpexpress.qpexpress.dto
 
 import org.keycloak.representations.idm.CredentialRepresentation
 import org.keycloak.representations.idm.UserRepresentation
+import java.util.*
 
 sealed interface UserDTO {
     data class CreateUserDTO(
-            val email: String,
-            val password: String,
-            val group: String,
-            val firstName: String,
-            val lastName: String,
-            val patronymic: String
+        val email: String,
+        val password: String,
+        val group: String,
+        val firstName: String,
+        val lastName: String,
+        val patronymic: String
     ) : UserDTO {
         fun toUserRepresentation(): UserRepresentation {
             return UserRepresentation().also { user ->
                 user.email = email
                 user.credentials = listOf(
-                        CredentialRepresentation().also { credential ->
-                            credential.type = CredentialRepresentation.PASSWORD
-                            credential.value = password
-                            credential.isTemporary = false
-                        }
+                    CredentialRepresentation().also { credential ->
+                        credential.type = CredentialRepresentation.PASSWORD
+                        credential.value = password
+                        credential.isTemporary = false
+                    }
                 )
                 user.firstName = firstName
                 user.lastName = lastName
@@ -32,28 +33,29 @@ sealed interface UserDTO {
     }
 
     data class LoginDTO(
-            val email: String,
-            val password: String,
+        val email: String,
+        val password: String,
     ) : UserDTO
 
     data class LoginResponseDTO(
-            val accessToken: String,
-            val refreshToken: String,
+        val accessToken: String,
+        val refreshToken: String,
     )
 
     data class UpdateUserDTO(
-            val firstName: String,
-            val lastName: String,
-            val patronymic: String,
-            val email: String,
+        val id: UUID,
+        val firstName: String,
+        val lastName: String,
+        val patronymic: String,
+        val email: String,
     ) : UserDTO
 
     data class UserResponseDTO(
-            val id: String,
-            val firstName: String,
-            val lastName: String,
-            val patronymic: String,
-            val email: String,
+        val id: String,
+        val firstName: String,
+        val lastName: String,
+        val patronymic: String,
+        val email: String,
     ) : UserDTO {
         constructor(user: UserRepresentation) : this(
             id = user.id,

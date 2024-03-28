@@ -1,6 +1,7 @@
 package kz.qpexpress.qpexpress.handler
 
 import kz.qpexpress.qpexpress.dto.AddressDTO
+import kz.qpexpress.qpexpress.model.Language
 import kz.qpexpress.qpexpress.repository.AddressRepository
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -11,8 +12,8 @@ import java.util.*
 class AddressHandler(
     private val addressRepository: AddressRepository,
 ) : IAddressHandler {
-    override fun createAddress(data: AddressDTO.CreateAddressDTO): ServerResponse {
-        val savingEntity = data.toEntity()
+    override fun createAddress(data: AddressDTO.CreateAddressDTO, language: Language): ServerResponse {
+        val savingEntity = data.toEntity(language)
         val result = addressRepository.save(savingEntity)
         return ServerResponse.ok().body(
             AddressDTO.AddressResponse(
@@ -68,8 +69,8 @@ class AddressHandler(
         )
     }
 
-    override fun getAddresses(): ServerResponse {
-        val result = addressRepository.findAll()
+    override fun getAddresses(language: Language): ServerResponse {
+        val result = addressRepository.findAllByLanguage(language)
         return ServerResponse.ok().body(result.map {
             AddressDTO.AddressResponse(
                 id = it.id!!,

@@ -13,6 +13,7 @@ class PaymentPage(
     private val signatureHandler: SignatureHandler,
 ) {
     var baseUrl: String = "https://paymentpage.jetpay.kz/payment"
+    private final val charSet: String = "UTF-8"
 
     /**
      * Method build payment URL
@@ -25,7 +26,7 @@ class PaymentPage(
             e.key + "=" + encode(
                 e.value
             )
-        }.joinToString { "&" }
+        }.joinToString("&")
 
         return "$baseUrl?$query$signature"
     }
@@ -37,17 +38,9 @@ class PaymentPage(
      */
     private fun encode(param: Any): String {
         try {
-            return URLEncoder.encode(param.toString(), CHARSET)
+            return URLEncoder.encode(param.toString(), charSet)
         } catch (e: UnsupportedEncodingException) {
             throw RuntimeException(e)
         }
-    }
-
-    companion object {
-        /**
-         * Encoding charset
-         */
-        private const val CHARSET = "UTF-8"
-
     }
 }

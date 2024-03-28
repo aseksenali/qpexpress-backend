@@ -20,11 +20,17 @@ sealed interface DeliveryDTO {
 
     data class UpdateDeliveryRequestDTO(
         val userId: UUID,
+        val recipient: Recipient,
         val weight: Float,
         val kazPostTrackNumber: String?,
         val price: Float,
         val currencyId: UUID,
-        val goods: List<UUID>
+        val goods: List<UUID>,
+        val invoice: FileDB,
+    ) : DeliveryDTO
+
+    data class UpdateDeliveryStatusRequestDTO(
+        val status: DeliveryStatus
     ) : DeliveryDTO
 
     data class DeliveryResponseDTO(

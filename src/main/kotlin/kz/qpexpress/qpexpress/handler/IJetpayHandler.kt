@@ -1,9 +1,12 @@
 package kz.qpexpress.qpexpress.handler
 
-import kz.qpexpress.qpexpress.model.jetpay.Payment
-import org.springframework.web.servlet.function.ServerResponse
+import kz.qpexpress.qpexpress.dto.JetpayDTO
+import kz.qpexpress.qpexpress.dto.PaymentStatus
+import java.net.URI
+import java.util.*
 
 interface IJetpayHandler {
-    fun createPayment(payment: Payment): ServerResponse
-    fun updatePaymentStatus(): ServerResponse
+    fun createPayment(data: JetpayDTO.CreatePaymentRequest): Result<URI>
+    fun getPaymentStatus(deliveryId: UUID): Result<PaymentStatus>
+    fun updatePaymentStatus(data: JetpayDTO.UpdatePaymentStatusRequest): Result<PaymentStatus>
 }

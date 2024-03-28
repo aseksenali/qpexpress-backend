@@ -7,17 +7,21 @@ import kz.qpexpress.qpexpress.configuration.PaymentStatusChecker
 import kz.qpexpress.qpexpress.dto.KaspiDTO
 import kz.qpexpress.qpexpress.dto.PaymentStatus
 import kz.qpexpress.qpexpress.dto.TradePoint
+import kz.qpexpress.qpexpress.exception.NotFoundException
 import kz.qpexpress.qpexpress.model.KaspiPayment
+import kz.qpexpress.qpexpress.repository.DeliveryRepository
 import kz.qpexpress.qpexpress.repository.KaspiPaymentRepository
 import kz.qpexpress.qpexpress.service.KaspiService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.client.getForObject
 import org.springframework.web.client.postForObject
 import java.time.LocalDateTime
+import java.util.*
 
 object ApiEndpoints {
     const val GET_TRADE_POINTS = "/r3/v01/partner/tradepoints/"
@@ -35,17 +39,19 @@ class KaspiHandler(
     private val restTemplate: RestTemplate,
     private val kaspiPaymentRepository: KaspiPaymentRepository,
     private val kaspiProperties: KaspiProperties,
+    private val deliveryRepository: DeliveryRepository,
     private val paymentStatusChecker: PaymentStatusChecker,
     private val mapper: ObjectMapper
 ) : IKaspiHandler {
     private final val logger: Logger = LoggerFactory.getLogger(KaspiService::class.java)
 
-    override fun getTradePoints(): KaspiDTO.KaspiResponse<List<TradePoint>> {
+    override fun getTradePoints(): Result<KaspiDTO.KaspiResponse<List<TradePoint>>> {
         val bin = kaspiProperties.organizationBin
-        return restTemplate.getForObject<KaspiDTO.KaspiResponse<List<TradePoint>>>("${ApiEndpoints.GET_TRADE_POINTS}${bin}")
+        val response = restTemplate.getForObject<KaspiDTO.KaspiResponse<List<TradePoint>>>("${ApiEndpoints.GET_TRADE_POINTS}${bin}")
+        return Result.success(response)
     }
 
-    override fun registerDevice(data: KaspiDTO.RegisterDeviceRequest): KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.RegisterDeviceResponse> {
+    override fun registerDevice(data: KaspiDTO.RegisterDeviceRequest): Result<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.RegisterDeviceResponse>> {
         val requestBody = """
                 {
                     "DeviceId": "${data.deviceId}",
@@ -53,13 +59,15 @@ class KaspiHandler(
                     "OrganizationBin": "${kaspiProperties.organizationBin}"
                 }
         """.trimIndent()
-        return restTemplate.postForObject<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.RegisterDeviceResponse>>(
+        val response = restTemplate.postForObject<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.RegisterDeviceResponse>>(
             ApiEndpoints.REGISTER_DEVICE,
             requestBody
         )
+
+        return Result.success(response)
     }
 
-    override fun createPayment(data: KaspiDTO.CreatePaymentRequest): KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.CreatePaymentResponse> {
+    override fun createPayment(data: KaspiDTO.CreatePaymentRequest): Result<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.CreatePaymentResponse>> {
         val requestBody = """
                 {
                     "Amount": ${data.amount},
@@ -73,9 +81,10 @@ class KaspiHandler(
             ApiEndpoints.CREATE_PAYMENT,
             requestBody
         )
-        if (response.statusCode == 0) {
+        if (response.statusCode == 0 && response.data != null) {
             val payment = KaspiPayment(
                 paymentId = response.data.paymentId,
+                phoneNumber = data.phoneNumber,
                 totalAmount = data.amount,
                 availableReturnAmount = 0.0,
                 date = LocalDateTime.now(),
@@ -83,11 +92,13 @@ class KaspiHandler(
             )
             kaspiPaymentRepository.save(payment)
         }
-        return response
+        return Result.success(response)
     }
 
-    override fun createLink(data: KaspiDTO.CreateLinkRequest): KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.CreateLinkResponse> {
+    override fun createLink(data: KaspiDTO.CreateLinkRequest): Result<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.CreateLinkResponse>> {
+        val delivery = deliveryRepository.findByIdOrNull(data.deliveryId) ?: return Result.failure(NotFoundException)
         val payment = KaspiPayment().also {
+            it.delivery = delivery
             it.totalAmount = data.amount
         }
         val savedPayment = kaspiPaymentRepository.save(payment)
@@ -104,16 +115,18 @@ class KaspiHandler(
             requestBody
         )
         val result = mapper.readValue<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.CreateLinkResponse>>(response)
-        if (result.statusCode == 0) {
+        if (result.statusCode == 0 && result.data != null) {
             paymentStatusChecker.startChecking(result.data.paymentId, result.data.paymentBehaviorOptions.statusPollingInterval * 1000L)
             savedPayment.paymentId = result.data.paymentId
             kaspiPaymentRepository.save(savedPayment)
         }
-        return result
+        return Result.success(result)
     }
 
-    override fun createQR(data: KaspiDTO.CreateQRCodeRequest): KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.CreateQRCodeResponse> {
+    override fun createQR(data: KaspiDTO.CreateQRCodeRequest): Result<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.CreateQRCodeResponse>> {
+        val delivery = deliveryRepository.findByIdOrNull(data.deliveryId) ?: return Result.failure(NotFoundException)
         val payment = KaspiPayment().also {
+            it.delivery = delivery
             it.totalAmount = data.amount
         }
         val savedPayment = kaspiPaymentRepository.save(payment)
@@ -131,33 +144,47 @@ class KaspiHandler(
         )
         logger.info("Response: $response")
         val result = mapper.readValue<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.CreateQRCodeResponse>>(response)
-        if (result.statusCode == 0) {
+        if (result.statusCode == 0 && result.data != null) {
             paymentStatusChecker.startChecking(result.data.paymentId, result.data.paymentBehaviorOptions.statusPollingInterval * 1000L)
             savedPayment.paymentId = result.data.paymentId
             kaspiPaymentRepository.save(savedPayment)
         }
-        return result
+        return Result.success(result)
     }
 
-    override fun getPaymentStatus(paymentId: Long): KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.PaymentStatusResponse> {
+    override fun getPaymentStatus(paymentId: Long): Result<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.PaymentStatusResponse>> {
         val response = restTemplate.getForObject<String>(
             "${ApiEndpoints.GET_PAYMENT_METHOD}$paymentId"
         )
         logger.info("Response: $response")
         val result = mapper.readValue<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.PaymentStatusResponse>>(response)
-        if (result.statusCode == 0) {
+        if (result.statusCode == 0 && result.data != null) {
             val payment = kaspiPaymentRepository.findByPaymentId(paymentId)
             if (payment == null) {
                 logger.error("Payment with id $paymentId not found")
-                return result
+                return Result.success(result)
             }
             payment.status = result.data.status
             kaspiPaymentRepository.save(payment)
         }
-        return result
+        return Result.success(result)
     }
 
-    override fun getPaymentDetails(paymentId: Long): KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.PaymentDetailsResponse> {
+    override fun getPaymentStatus(deliveryId: UUID): Result<PaymentStatus> {
+        val payment = kaspiPaymentRepository.findByDeliveryId(deliveryId)
+        if (payment.isEmpty()) {
+            return Result.failure(NotFoundException)
+        }
+        if (payment.any { it.status == PaymentStatus.PROCESSED }) {
+            return Result.success(PaymentStatus.PROCESSED)
+        }
+        if (payment.all { it.status == PaymentStatus.ERROR }) {
+            return Result.success(PaymentStatus.ERROR)
+        }
+        return Result.success(PaymentStatus.WAIT)
+    }
+
+    override fun getPaymentDetails(paymentId: Long): Result<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.PaymentDetailsResponse>> {
         val deviceToken = kaspiProperties.deviceToken
         val url = "${ApiEndpoints.GET_PAYMENT_DETAILS}?QrPaymentId=$paymentId&DeviceToken=$deviceToken"
         val response = restTemplate.getForObject<String>(
@@ -165,17 +192,17 @@ class KaspiHandler(
         )
         logger.info("Response: $response")
         val result = mapper.readValue<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.PaymentDetailsResponse>>(response)
-        if (result.statusCode == 0) {
+        if (result.statusCode == 0 && result.data != null) {
             val payment = kaspiPaymentRepository.findByPaymentId(paymentId)
             if (payment == null) {
                 logger.error("Payment with id $paymentId not found")
-                return result
+                return Result.success(result)
             }
             payment.availableReturnAmount = result.data.availableReturnAmount
             payment.date = result.data.transactionDate
             payment.totalAmount = result.data.totalAmount
             kaspiPaymentRepository.save(payment)
         }
-        return result
+        return Result.success(result)
     }
 }

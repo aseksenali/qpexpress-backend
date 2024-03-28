@@ -1,6 +1,8 @@
 package kz.qpexpress.qpexpress.model
 
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 
 @Entity
 class Address: AbstractJpaPersistable() {
@@ -11,4 +13,6 @@ class Address: AbstractJpaPersistable() {
     lateinit var street: String
     lateinit var house: String
     lateinit var postcode: String
+    @Enumerated(EnumType.STRING)
+    lateinit var language: Language
 }

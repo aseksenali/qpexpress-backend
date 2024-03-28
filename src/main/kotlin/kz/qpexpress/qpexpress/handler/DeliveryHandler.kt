@@ -4,11 +4,13 @@ import kotlin.random.Random
 import kz.qpexpress.qpexpress.dto.DeliveryDTO
 import kz.qpexpress.qpexpress.model.Delivery
 import kz.qpexpress.qpexpress.model.DeliveryStatus
+import kz.qpexpress.qpexpress.model.FileDB
 import kz.qpexpress.qpexpress.model.GoodStatus
 import kz.qpexpress.qpexpress.repository.*
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.servlet.function.ServerResponse
 import java.util.*
 
@@ -17,6 +19,7 @@ class DeliveryHandler(
     private val deliveryRepository: DeliveryRepository,
     private val currencyRepository: CurrencyRepository,
     private val goodRepository: GoodRepository,
+    private val fileDBRepository: FileDBRepository,
 ) : IDeliveryHandler {
     @PreAuthorize("hasAuthority('deliveries:write')")
     override fun createDelivery(data: DeliveryDTO.CreateDeliveryRequestDTO): ServerResponse {
@@ -24,6 +27,12 @@ class DeliveryHandler(
             goodRepository.findByIdOrNull(it) ?: return ServerResponse.notFound().build()
         }.toMutableSet()
         val currency = currencyRepository.findByIdOrNull(data.currencyId) ?: return ServerResponse.notFound().build()
+        val fileDB = FileDB().apply {
+            this.name = data.invoice.name
+            this.contentType = data.invoice.contentType
+            this.data = data.invoice.data
+        }
+        val savedFile = fileDBRepository.save(fileDB)
         val delivery = Delivery().apply {
             this.userId = data.userId
             this.recipient = data.recipient
@@ -34,7 +43,7 @@ class DeliveryHandler(
             this.payed = false
             this.price = data.price
             this.status = DeliveryStatus.IN_THE_WAY
-            this.invoice = data.invoice
+            this.invoice = savedFile
             this.deliveryNumber = generateDeliveryNumber()
         }
         val result = deliveryRepository.save(delivery)
@@ -47,7 +56,8 @@ class DeliveryHandler(
         return ServerResponse.ok().body(response)
     }
 
-    @PreAuthorize("hasAuthority('deliveries:update')")
+    @Transactional
+    @PreAuthorize("hasAuthority('deliveries:write')")
     override fun updateDelivery(data: DeliveryDTO.UpdateDeliveryRequestDTO, id: UUID): ServerResponse {
         val goods = data.goods.map {
             goodRepository.findByIdOrNull(it) ?: return ServerResponse.notFound().build()
@@ -61,7 +71,19 @@ class DeliveryHandler(
             this.goods = goods
         }
         val result = deliveryRepository.save(delivery)
-        return ServerResponse.ok().body(result)
+        val response = DeliveryDTO.DeliveryResponseDTO(result)
+        return ServerResponse.ok().body(response)
+    }
+
+    @Transactional
+    override fun updateDeliveryStatus(data: DeliveryDTO.UpdateDeliveryStatusRequestDTO, id: UUID): ServerResponse {
+        val delivery = deliveryRepository.findByIdOrNull(id) ?: return ServerResponse.badRequest().build()
+        delivery.apply {
+            status = data.status
+        }
+        val result = deliveryRepository.save(delivery)
+        val response = DeliveryDTO.DeliveryResponseDTO(result)
+        return ServerResponse.ok().body(response)
     }
 
     @PreAuthorize("hasAuthority('deliveries:delete')")

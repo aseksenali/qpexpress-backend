@@ -1,6 +1,7 @@
 package kz.qpexpress.qpexpress.dto
 
 import kz.qpexpress.qpexpress.model.Address
+import kz.qpexpress.qpexpress.model.Language
 import java.util.*
 
 interface AddressDTO {
@@ -13,7 +14,7 @@ interface AddressDTO {
         val house: String,
         val postcode: String,
     ) : AddressDTO {
-        fun toEntity(): Address {
+        fun toEntity(language: Language): Address {
             val address = Address()
             address.country = country
             address.city = city
@@ -22,6 +23,7 @@ interface AddressDTO {
             address.street = street
             address.house = house
             address.postcode = postcode
+            address.language = language
             return address
         }
     }
