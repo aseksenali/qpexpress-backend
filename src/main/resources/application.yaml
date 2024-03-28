@@ -1,7 +1,7 @@
 keycloak:
   realm: 'QPExpress'
   auth-server-url: 'https://qpexpress.kz/auth'
-  admin-username: 'askhat.seksenali@sentel.kz'
+  admin-username: 'admin'
   admin-password: 'passwd'
 kaspi:
   organization-bin: '230840030304'
@@ -31,5 +31,5 @@ spring:
               driver: org.postgresql.Driver
               URL: jdbc:postgresql://qpexpress.kz:5432/qpexpress?currentSchema=quartz
               user: qpexpress-admin
-              password: F235vk26
+              password: passwd
               maxConnections: 5
