@@ -8,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://qpexpress.kz:5432/qpexpress
     username: qpexpress-admin
-    password: F235vk26
+    password: passwd
   security:
     oauth2:
       resource-server:
