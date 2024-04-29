@@ -7,8 +7,8 @@ kaspi:
   organization-bin: '230840030304'
   device-token: 'd87e6939-0a82-4f9b-8561-3473ead74ed1'
 jetpay:
-  project-id: 134112
-  secret-key: '496d008778131723a0cc03d6b61bf848daf3d18c963c8478a95c0bcea059d198b9f69a6c4ad6e5e51785337a7dd3456aba75e178308610e92ec416c95451bc05'
+  project-id: 134122
+  secret-key: 'f7d96c66240ffcdb4833fb014d8d36d1a4f105a8408e54c1705c16eea30b81d395b56a576a5bc1a3f8a86a790e21d60135d11b7c6fa60c30bb72af83989c08a0'
 spring:
   quartz:
     job-store-type: jdbc

@@ -8,17 +8,17 @@
         <form id="kc-register-form" class="${properties.kcFormClass!}" action="${url.registrationAction}" method="post">
             <div class="${properties.kcRegisterFormClass}">
                 <div class="${properties.kcFormColumnClass}">
-                    <div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('firstName',properties.kcFormGroupErrorClass!)}">
-                        <div class="${properties.kcInputWrapperClass!}">
-                            <input type="text" id="firstName" class="${properties.kcInputClass!}" name="firstName"
-                                   placeholder="${msg("firstName")}" value="${(register.formData.firstName!'')}"/>
-                        </div>
-                    </div>
-
                     <div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('lastName',properties.kcFormGroupErrorClass!)}">
                         <div class="${properties.kcInputWrapperClass!}">
                             <input type="text" id="lastName" class="${properties.kcInputClass!}" name="lastName"
                                    placeholder="${msg("lastName")}" value="${(register.formData.lastName!'')}"/>
+                        </div>
+                    </div>
+
+                    <div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('firstName',properties.kcFormGroupErrorClass!)}">
+                        <div class="${properties.kcInputWrapperClass!}">
+                            <input type="text" id="firstName" class="${properties.kcInputClass!}" name="firstName"
+                                   placeholder="${msg("firstName")}" value="${(register.formData.firstName!'')}"/>
                         </div>
                     </div>
 

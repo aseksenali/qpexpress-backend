@@ -1,7 +1,8 @@
 package kz.qpexpress.qpexpress.dto
 
-import java.time.LocalDateTime
-import java.util.UUID
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import java.time.ZonedDateTime
+import java.util.*
 
 sealed interface JetpayDTO {
     data class CreatePaymentRequest(
@@ -10,16 +11,20 @@ sealed interface JetpayDTO {
         val deliveryId: UUID,
     ) : JetpayDTO
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class UpdatePaymentStatusRequest(
         val payment: PaymentStatusResponse,
     ) : JetpayDTO
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class PaymentStatusResponse(
         val status: String,
         val sum: PaymentSumResponse,
-        val date: LocalDateTime
+        val date: ZonedDateTime,
+        val id: String,
     ) : JetpayDTO
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     data class PaymentSumResponse(
         val amount: Float,
         val currency: String

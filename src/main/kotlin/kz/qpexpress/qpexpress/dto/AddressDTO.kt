@@ -7,12 +7,12 @@ import java.util.*
 interface AddressDTO {
     data class CreateAddressDTO(
         val country: String,
-        val city: String,
-        val district: String,
-        val neighborhood: String,
-        val street: String,
-        val house: String,
-        val postcode: String,
+        val city: String?,
+        val district: String?,
+        val neighborhood: String?,
+        val street: String?,
+        val house: String?,
+        val postcode: String?,
     ) : AddressDTO {
         fun toEntity(language: Language): Address {
             val address = Address()
@@ -30,12 +30,12 @@ interface AddressDTO {
 
     data class UpdateAddressDTO(
         val country: String,
-        val city: String,
-        val district: String,
-        val neighborhood: String,
-        val street: String,
-        val house: String,
-        val postcode: String,
+        val city: String?,
+        val district: String?,
+        val neighborhood: String?,
+        val street: String?,
+        val house: String?,
+        val postcode: String?,
     ) : AddressDTO {
         fun toEntity(id: UUID): Address {
             val address = Address()
@@ -54,11 +54,11 @@ interface AddressDTO {
     data class AddressResponse(
         val id: UUID,
         val country: String,
-        val city: String,
-        val district: String,
-        val neighborhood: String,
-        val street: String,
-        val house: String,
-        val postcode: String,
+        val city: String?,
+        val district: String?,
+        val neighborhood: String?,
+        val street: String?,
+        val house: String?,
+        val postcode: String?,
     ) : AddressDTO
 }

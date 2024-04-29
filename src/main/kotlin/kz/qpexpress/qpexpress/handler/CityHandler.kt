@@ -16,13 +16,7 @@ class CityHandler(
         val country = countryRepository.findByIdOrNull(data.countryId) ?: return ServerResponse.badRequest().build()
         val savingEntity = data.toEntity(country)
         val result = cityRepository.save(savingEntity)
-        return ServerResponse.ok().body(CityDTO.CityResponseDTO(
-            id = result.id!!,
-            nameRus = result.nameRus,
-            nameChn = result.nameChn,
-            nameEng = result.nameEng,
-            countryId = country.id!!,
-        ))
+        return ServerResponse.ok().body(CityDTO.CityResponseDTO(result))
     }
 
     override fun getAllCities(): ServerResponse {

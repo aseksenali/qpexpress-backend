@@ -19,6 +19,7 @@ class AddressService(
         val languageEnum = when (language) {
             "ru" -> Language.RUSSIAN
             "en" -> Language.ENGLISH
+            "kz" -> Language.KAZAKH
             "zh" -> Language.CHINESE
             else -> return ServerResponse.badRequest().build()
         }
@@ -46,6 +47,7 @@ class AddressService(
         val languageEnum = when (language) {
             "ru" -> Language.RUSSIAN
             "en" -> Language.ENGLISH
+            "kz" -> Language.KAZAKH
             "zh" -> Language.CHINESE
             else -> return ServerResponse.badRequest().build()
         }

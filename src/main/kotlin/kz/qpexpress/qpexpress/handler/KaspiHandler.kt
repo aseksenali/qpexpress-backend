@@ -116,7 +116,8 @@ class KaspiHandler(
         )
         val result = mapper.readValue<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.CreateLinkResponse>>(response)
         if (result.statusCode == 0 && result.data != null) {
-            paymentStatusChecker.startChecking(result.data.paymentId, result.data.paymentBehaviorOptions.statusPollingInterval * 1000L)
+            logger.info("Polling interval: ${result.data.paymentBehaviorOptions.statusPollingInterval} seconds")
+            paymentStatusChecker.startChecking(result.data.paymentId, result.data.paymentBehaviorOptions.statusPollingInterval)
             savedPayment.paymentId = result.data.paymentId
             kaspiPaymentRepository.save(savedPayment)
         }
@@ -145,7 +146,8 @@ class KaspiHandler(
         logger.info("Response: $response")
         val result = mapper.readValue<KaspiDTO.KaspiResponse<KaspiDTO.ResponseData.CreateQRCodeResponse>>(response)
         if (result.statusCode == 0 && result.data != null) {
-            paymentStatusChecker.startChecking(result.data.paymentId, result.data.paymentBehaviorOptions.statusPollingInterval * 1000L)
+            logger.info("Polling interval: ${result.data.paymentBehaviorOptions.statusPollingInterval} seconds")
+            paymentStatusChecker.startChecking(result.data.paymentId, result.data.paymentBehaviorOptions.statusPollingInterval)
             savedPayment.paymentId = result.data.paymentId
             kaspiPaymentRepository.save(savedPayment)
         }

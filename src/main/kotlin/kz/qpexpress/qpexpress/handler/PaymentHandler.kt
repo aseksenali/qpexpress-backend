@@ -8,15 +8,20 @@ import java.util.*
 class PaymentHandler(
     private val jetpayHandler: IJetpayHandler,
     private val kaspiHandler: IKaspiHandler,
-): IPaymentHandler {
+) : IPaymentHandler {
     override fun getPaymentStatus(deliveryId: UUID): Result<PaymentStatus> {
         val jetpayResult = jetpayHandler.getPaymentStatus(deliveryId)
-        jetpayResult.onSuccess {
-            return Result.success(it)
+        val jetpayStatus = jetpayResult.getOrNull()
+        if (jetpayStatus != null && jetpayStatus != PaymentStatus.WAIT) {
+            return Result.success(jetpayStatus)
         }
         val kaspiResult = kaspiHandler.getPaymentStatus(deliveryId)
-        kaspiResult.onSuccess {
-            return Result.success(it)
+        val kaspiStatus = kaspiResult.getOrNull()
+        if (kaspiStatus != null && kaspiStatus != PaymentStatus.WAIT) {
+            return Result.success(kaspiStatus)
+        }
+        if (jetpayStatus == PaymentStatus.WAIT || kaspiStatus == PaymentStatus.WAIT) {
+            return Result.success(PaymentStatus.WAIT)
         }
         return Result.success(PaymentStatus.NOT_CREATED)
     }

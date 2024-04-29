@@ -14,6 +14,7 @@ class Good: AbstractJpaPersistable() {
     @ManyToOne
     @JoinColumn(name = "country_id")
     lateinit var country: Country
+    @Column(name = "link", length = 4096)
     lateinit var link: String
     @Column(name = "price", nullable = false)
     var price: Float = 0.0f

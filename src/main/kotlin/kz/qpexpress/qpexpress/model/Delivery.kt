@@ -23,7 +23,7 @@ class Delivery: AbstractJpaPersistable() {
     lateinit var recipient: Recipient
     @Enumerated(EnumType.STRING)
     var status: DeliveryStatus = DeliveryStatus.CREATED
-    @OneToMany(mappedBy = "delivery")
+    @OneToMany(mappedBy = "delivery", fetch = FetchType.LAZY)
     var goods: MutableSet<Good> = mutableSetOf()
     var payed: Boolean = false
 }

@@ -7,6 +7,7 @@ import java.util.*
 sealed interface CityDTO {
     data class CreateCityDTO(
         val nameRus: String,
+        val nameKaz: String,
         val nameChn: String,
         val nameEng: String,
         val countryId: UUID
@@ -14,6 +15,7 @@ sealed interface CityDTO {
         fun toEntity(country: Country): City {
             val city = City()
             city.nameRus = nameRus
+            city.nameKaz = nameKaz
             city.nameChn = nameChn
             city.nameEng = nameEng
             city.country = country
@@ -24,8 +26,18 @@ sealed interface CityDTO {
     data class CityResponseDTO(
         val id: UUID,
         val nameRus: String,
+        val nameKaz: String,
         val nameChn: String,
         val nameEng: String,
         val countryId: UUID,
-    ) : CityDTO
+    ) : CityDTO {
+        constructor(city: City) : this(
+            id = city.id!!,
+            nameRus = city.nameRus,
+            nameKaz = city.nameKaz,
+            nameChn = city.nameChn,
+            nameEng = city.nameEng,
+            countryId = city.country.id!!
+        )
+    }
 }

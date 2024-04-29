@@ -7,12 +7,12 @@ import jakarta.persistence.Enumerated
 @Entity
 class Address: AbstractJpaPersistable() {
     lateinit var country: String
-    lateinit var city: String
-    lateinit var district: String
-    lateinit var neighborhood: String
-    lateinit var street: String
-    lateinit var house: String
-    lateinit var postcode: String
+    var city: String? = null
+    var district: String? = null
+    var neighborhood: String? = null
+    var street: String? = null
+    var house: String? = null
+    var postcode: String? = null
     @Enumerated(EnumType.STRING)
     lateinit var language: Language
 }

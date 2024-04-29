@@ -6,6 +6,7 @@ import jakarta.persistence.OneToMany
 @Entity
 class Country: AbstractJpaPersistable() {
     lateinit var nameRus: String
+    lateinit var nameKaz: String
     lateinit var nameChn: String
     lateinit var nameEng: String
     @OneToMany(mappedBy = "country")

@@ -5,13 +5,17 @@ import java.util.*
 
 sealed interface CountryDTO {
     data class CreateCountryDTO(
-        val name: String
+        val nameRus: String,
+        val nameKaz: String,
+        val nameChn: String,
+        val nameEng: String
     ) : CountryDTO {
         fun toEntity(): Country {
             val country = Country()
-            country.nameRus = name
-            country.nameChn = name
-            country.nameEng = name
+            country.nameRus = nameRus
+            country.nameKaz = nameKaz
+            country.nameChn = nameChn
+            country.nameEng = nameEng
             return country
         }
     }
@@ -19,12 +23,14 @@ sealed interface CountryDTO {
     data class CountryResponseDTO(
         val id: UUID,
         val nameRus: String,
+        val nameKaz: String,
         val nameChn: String,
         val nameEng: String
     ) : CountryDTO {
         constructor(country: Country) : this(
             id = country.id!!,
             nameRus = country.nameRus,
+            nameKaz = country.nameKaz,
             nameChn = country.nameChn,
             nameEng = country.nameEng
         )

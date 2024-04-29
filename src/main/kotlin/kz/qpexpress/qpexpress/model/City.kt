@@ -7,6 +7,7 @@ import jakarta.persistence.ManyToOne
 @Entity
 class City: AbstractJpaPersistable() {
     lateinit var nameRus: String
+    lateinit var nameKaz: String
     lateinit var nameChn: String
     lateinit var nameEng: String
     @ManyToOne
